@@ -1,19 +1,9 @@
 // 
 
-// ブラウザのクライアント領域を取得
+// canvasを配置
 let body = document.getElementsByTagName("body")[0];
 let width = 600;
 let height = 300;
-// let width = window.innerWidth || document.documentElement.clientWidth || body.clientWidth;
-// let height = window.innerHeight || document.documentElement.clientHeight || body.clientHeight;
-// var win = window,
-// 	d = document,
-// 	e = d.documentElement,
-// 	g = d.getElementsByTagName('body')[0],
-// 	width = win.innerWidth || e.clientWidth || g.clientHeight,
-// 	height = win.innerHeight | e.clientHeight | g.clientHeight;
-
-// canvasを配置
 let canvas = document.createElement("canvas");
 body.appendChild(canvas);
 let ctx = canvas.getContext("2d");
@@ -23,8 +13,8 @@ canvas.style.border = "1px solid";
 
 // 変数
 let angle = 0;				//角度
-let radius = 20;			//半径
-let direction = 1;			//半径変化の向き
+let radius = 100;			//半径
+let direction = false;			//半径変化の向き
 let hue = 0;				//色相
 // let saturation = 0.6;		//彩度
 // let value = 0.8;			//明度
@@ -34,15 +24,14 @@ let oldPoss = [
 	{ x: 0, y: 0 },
 	{ x: 0, y: 0 }
 ];
-let mousePosX, mousePosY;
+let mousePos = { x: width/2, y: height/2 };
 
+// ■登録━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // mousodownイベントリスナを登録
 canvas.addEventListener("mousemove", function mouseMoveListener(e) {
 	// プレス時の相対位置を記録
 	// 要素の原点からの距離
-	mousePosX = e.offsetX;
-	mousePosY = e.offsetY;
-	console.log(mousePosX +" | "+ mousePosY);
+	mousePos = { x: e.offsetX, y: e.offsetY }; 
 }, false);
 
 // setintarval登録
@@ -55,9 +44,11 @@ setInterval(() => {
 	// 色
 	hue += 0.5;
 	if(hue >= 360) hue -= 360;
-	let hueTemp = hue + Math.random() * 200;
-	let saturation = 0.3 + Math.random() * 0.5; 
-	let col = hsv2rgbToString(hueTemp, saturation, 0.8);
+	let hueTemp = hue + Math.random() * 180;
+	if(hueTemp >= 360) hueTemp -= 360;
+	// 透過
+	let alpha = 0 + Math.random() * 0.6; 
+	let col = hsv2rgbToString(hueTemp, Math.random()*0.7, 1);
 	// console.log(col);
 	// 半径
 	radius+= direction;
@@ -69,16 +60,13 @@ setInterval(() => {
 		if(radius < 10) direction = true;
 	}
 	// 描画
-	console.log(mousePosX +" | "+ mousePosY);
-	drawSquare(mousePosX, mousePosY, radius, angle, col);
+	drawSquare(mousePos, radius, angle, col, alpha);
 }, 20);
 
+// ■関数━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 角度のついた正三角形を描画
-function drawSquare(x, y, radius, angle, color) {
-	// ctx.fillStyle = "rgb(80, 80, 80)";
-	// ctx.fillRect(0, 0, width, height);
-	// if(direction)
-	// 	ctx.clearRect(0, 0, width, height);
+function drawSquare(pos, radius, angle, color, alpha) {
+	ctx.globalAlpha = alpha;
 	ctx.fillStyle = color;
 	// 描画
 	ctx.beginPath();
@@ -94,27 +82,27 @@ function drawSquare(x, y, radius, angle, color) {
 	let poss = [];
 	for(let num=0; num<4; num++) {
 		angle -= 90;
-		poss.push(positionByAngle(x, y, radius, angle));
+		poss.push(positionByAngle(pos, radius, angle));
 	}
 	oldPoss = poss;
 	// 白の描画
-	ctx.fillStyle = "white"; 
-	ctx.beginPath();
-	for(let num=0; num<4; num++) {
-		if(num == 0) 
-			ctx.moveTo(poss[num].x, poss[num].y);
-		else
-			ctx.lineTo(poss[num].x, poss[num].y);
-	}
-	ctx.closePath();
-	ctx.fill();	
+	// ctx.fillStyle = "white"; 
+	// ctx.beginPath();
+	// for(let num=0; num<4; num++) {
+	// 	if(num == 0) 
+	// 		ctx.moveTo(poss[num].x, poss[num].y);
+	// 	else
+	// 		ctx.lineTo(poss[num].x, poss[num].y);
+	// }
+	// ctx.closePath();
+	// ctx.fill();
 }
 
 // 半径と角度から座標を計算
-function positionByAngle(x, y, radius, angle) {
+function positionByAngle(pos, radius, angle) {
 	let rad = angle * (Math.PI/180);
-	x += radius * Math.cos(rad);
-	y -= radius * Math.sin(rad);
+	let x = pos.x + radius * Math.cos(rad);
+	let y = pos.y - radius * Math.sin(rad);
 	return { x: x, y: y };
 }
 
