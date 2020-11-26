@@ -3,6 +3,7 @@
 // canvasを配置
 let body = document.getElementsByTagName("body")[0];
 let explanation = document.getElementById("explanation");
+let isPhone = (window.matchMedia && window.matchMedia('(max-device-width: 640px)').matches)
 let win = window,
 	e = document.documentElement,
 	width = win.innerWidth || e.clientWidth || body.clientHeight,
@@ -41,7 +42,11 @@ let count = 15;
 canvas.addEventListener("mousemove", function mouseMoveListener(e) {
 	// プレス時の相対位置を記録
 	// 要素の原点からの距離
-	mousePos = { x: e.offsetX, y: e.offsetY }; 
+	if(isPhone) {
+		let touchObject = event.changedTouches[0];
+		mousePos = { x: touchObject.pageX, y: touchObject.pageY };
+	} else
+		mousePos = { x: e.offsetX, y: e.offsetY }; 
 }, false);
 
 // setintarval登録
