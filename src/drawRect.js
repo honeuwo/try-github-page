@@ -2,21 +2,30 @@
 
 // canvasを配置
 let body = document.getElementsByTagName("body")[0];
-let width = 600;
-let height = 300;
+let explanation = document.getElementById("explanation");
+let win = window,
+	e = document.documentElement,
+	width = win.innerWidth || e.clientWidth || body.clientHeight,
+	height = win.innerHeight | e.clientHeight | body.clientHeight;
+	if(width > 800) width = 800;
+width *= 0.9;
+height *= 0.7;
+// let width = 350;
+// let height = 450;
 let canvas = document.createElement("canvas");
 body.appendChild(canvas);
 let ctx = canvas.getContext("2d");
 canvas.width = width;
 canvas.height = height;
 canvas.style.border = "1px solid";
+canvas.style.backgroundColor = "white";
 
 // 変数
 let angle = 0;				//角度
 let radius = 100;			//半径
-let direction = false;			//半径変化の向き
+let direction = false;		//半径変化の向き
 let hue = 0;				//色相
-// let saturation = 0.6;		//彩度
+// let saturation = 0.6;	//彩度
 // let value = 0.8;			//明度
 let oldPoss = [
 	{ x: 0, y: 0 },
@@ -25,6 +34,7 @@ let oldPoss = [
 	{ x: 0, y: 0 }
 ];
 let mousePos = { x: width/2, y: height/2 };
+let count = 15;
 
 // ■登録━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // mousodownイベントリスナを登録
@@ -61,6 +71,11 @@ setInterval(() => {
 	}
 	// 描画
 	drawSquare(mousePos, radius, angle, col, alpha);
+	if(count > 15) {
+		count = 0;
+		explanation.style.color = col;
+	}
+	count++;
 }, 20);
 
 // ■関数━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
