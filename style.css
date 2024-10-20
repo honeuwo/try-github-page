@@ -1,6 +1,7 @@
 body {
     text-align: center;
-    background-color: lightgray;
+    color: white;
+    background-color: #666;
 }
 
 canvas {

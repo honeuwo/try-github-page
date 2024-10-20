@@ -3,12 +3,12 @@
 // canvasを配置
 let body = document.getElementsByTagName("body")[0];
 let explanation = document.getElementById("explanation");
-let isPhone = (window.matchMedia && window.matchMedia('(max-device-width: 640px)').matches)
+let isPhone = (window.matchMedia && window.matchMedia('(max-device-width: 640px)').matches);
 let win = window,
 	e = document.documentElement,
 	width = win.innerWidth || e.clientWidth || body.clientHeight,
 	height = win.innerHeight | e.clientHeight | body.clientHeight;
-	if(width > 800) width = 800;
+width = Math.min(width, 800);
 width *= 0.9;
 height *= 0.7;
 // let width = 350;
@@ -39,22 +39,25 @@ let count = 15;
 
 // ■登録━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // mousodownイベントリスナを登録
-canvas.addEventListener("mousemove", function mouseMoveListener(e) {
+const eventName = (isPhone) ? "touchmove" : "mousemove";
+canvas.addEventListener(eventName, function mouseMoveListener(e) {
 	// プレス時の相対位置を記録
 	// 要素の原点からの距離
 	if(isPhone) {
+		e.preventDefault();
 		let touchObject = event.changedTouches[0];
-		mousePos = { x: touchObject.pageX, y: touchObject.pageY };
+		const rect = canvas.getBoundingClientRect();
+		mousePos = { x: touchObject.pageX - rect.left, y: touchObject.pageY - rect.top };
 	} else
 		mousePos = { x: e.offsetX, y: e.offsetY }; 
 }, false);
 
-// setintarval登録
+// setinterval登録
 setInterval(() => {
 	// let now = Date.now() /1000;
 	// console.log(now.toFixed());
 	// 角度
-	angle += 0.5;
+	angle += Math.random() * 5;
 	if(angle >= 360) angle -= 360;
 	// 色
 	hue += 0.5;
@@ -62,7 +65,7 @@ setInterval(() => {
 	let hueTemp = hue + Math.random() * 180;
 	if(hueTemp >= 360) hueTemp -= 360;
 	// 透過
-	let alpha = 0 + Math.random() * 0.6; 
+	let alpha = 0 + Math.random() * 0.4; 
 	let col = hsv2rgbToString(hueTemp, Math.random()*0.7, 1);
 	// console.log(col);
 	// 半径
